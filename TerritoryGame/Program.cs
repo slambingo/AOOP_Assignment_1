@@ -15,9 +15,11 @@ class Program
         app.Styles.Add(new Avalonia.Themes.Fluent.FluentTheme());
         app.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Light;
 
-
-        GameController gameController = new GameController();
+    
+        GUI gui = new GUI();     
+        GameController gameController = new GameController(gui);
+        
         //gameController.Run();
-        app.Run(gameController.win);
+        app.Run(gui.win);
     }
 }
