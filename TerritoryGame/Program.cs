@@ -1,11 +1,23 @@
-﻿using System;
+﻿using Avalonia;
+using Avalonia.Controls;
 
-// Main Program
 class Program
 {
-    static void Main()
+    public static void Main(string[] args)
     {
-        //TextController controller = new TextController(model, view);
-        //controller.Run();
+        AppBuilder.Configure<Application>()
+                  .UsePlatformDetect()
+                  .Start(AppMain, args);
+    }
+
+    public static void AppMain(Application app, string[] args)
+    {
+        app.Styles.Add(new Avalonia.Themes.Fluent.FluentTheme());
+        app.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Light;
+
+
+        GameController gameController = new GameController();
+        //gameController.Run();
+        app.Run(gameController.win);
     }
 }
