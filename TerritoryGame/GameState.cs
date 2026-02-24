@@ -35,7 +35,7 @@ class GameState
         int loadedMapSizeCol = 6;
 
         mapSizeRow = loadedMapSizeRow;
-        mapSizeCol = loadedMapSizeRow;
+        mapSizeCol = loadedMapSizeCol;
 
         for(int row = 0; row < mapSizeRow; row++)
         {

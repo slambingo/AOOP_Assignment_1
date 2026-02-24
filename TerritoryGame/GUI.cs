@@ -16,6 +16,8 @@ class GUI
     public Window win;
     private List<List<Rectangle>> mapTiles = new List<List<Rectangle>>(); //[row][col]
 
+
+
     public GUI()
     {
         win = new Window
@@ -58,12 +60,13 @@ class GUI
         {
             for(int col = 0; col < mapSizeCol; col++)
             {
+                var tileColor = gameState.mapTiles[row][col].GetTileColor();
                 Rectangle rect = new Rectangle
                 {
                     Width = 50,     //this is max width here i think
                     Height = 50,    //max height
                 };
-                rect.Fill = Brushes.White;
+                rect.Fill = tileColor;
                 Grid.SetRow(rect, row);
                 Grid.SetColumn(rect, col);
 
