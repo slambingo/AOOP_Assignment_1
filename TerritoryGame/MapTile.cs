@@ -9,7 +9,7 @@ using Avalonia.PropertyStore;
 
 class MapTile
 {
-    //the data each grid element should have
+    
     private TileType type; //since the save.txt can contain only integers, 0,1,2... reserved for player, -1 empty, -2 mountain
     private int ownerId; //-1 if nobody, 0,1,2... reserved for playerIds
     private Button visual; //rectangle that displays the color
@@ -33,13 +33,15 @@ class MapTile
         {
             type = TileType.Empty;
             color = gameColors.GetEmptyTileColor();
+            ownerId = -1;
         }
         else if(tileTypeId == -2)
         {
             type = TileType.Mountain;
             color = gameColors.GetMountainTileColor();
+            ownerId = -1;
         }
-
+        
         rowId = tileRowId;
         colId = tileColId; 
     }
@@ -68,7 +70,7 @@ class MapTile
 
 public enum TileType
 {
-    PlayerOwned, //playerOwned
+    PlayerOwned,
     Empty, 
     Mountain
 }
