@@ -10,13 +10,26 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.PropertyStore;
 using Avalonia.Controls.Shapes;
+using Tmds.DBus.Protocol;
+using System.Security.Cryptography.X509Certificates;
 
+using Avalonia.Automation.Peers;
+using Avalonia.Controls.Metadata;
+using Avalonia.Controls.Primitives;
+using Avalonia.Data;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
+using Avalonia.VisualTree;
+using System.Data;
+
+//have one function where we load everything, and dont reload every elemnt on screen just the ones that changed
 class GUI
 {
     public Window win;
     private List<List<Rectangle>> mapTiles = new List<List<Rectangle>>(); //[row][col]
 
-
+    
 
     public GUI()
     {
@@ -28,10 +41,14 @@ class GUI
         };
     }
 
-    public void DisplayMapGrid(GameState gameState)
+
+
+    public void DisplayLoadedGameState(GameState gameState, GameController gameController)
     {
         int mapSizeRow = gameState.GetMapSizeRow();
         int mapSizeCol = gameState.GetMapSizeCol();
+
+        
 
         var stack = new StackPanel 
         {
@@ -41,12 +58,22 @@ class GUI
             Margin = new Thickness(20),
         };
 
+        TextBlock currentTurnPlayer = new TextBlock
+        {
+            Text = "Player" + gameState.GetCurrenTurnPlayerId() + " to move",
+            FontSize = 25,
+            Background = gameState.GetCurrentTurnPlayerColor(),
+            
+        };
+        
+
         //Declare the map
         Grid mapGrid = new Grid
         {
-            ShowGridLines = true,
+            ShowGridLines = true
         };
 
+        
         //Set rows and cols count
         for(int row = 0; row < mapSizeRow; row++)
             mapGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
@@ -60,28 +87,44 @@ class GUI
         {
             for(int col = 0; col < mapSizeCol; col++)
             {
-                var tileColor = gameState.mapTiles[row][col].GetTileColor();
-                Rectangle rect = new Rectangle
+                var tileColor = gameState.GetMapTile(row,col).GetColor();
+
+                Button tileButton = new Button
                 {
-                    Width = 50,     //this is max width here i think
-                    Height = 50,    //max height
+                    ClickMode = ClickMode.Press,
+                    Width = 50,
+                    Height = 50,
+                    Background = tileColor,
+                    CornerRadius = new CornerRadius(0),
+                    //somehow set the hover color 
                 };
-                rect.Fill = tileColor;
-                Grid.SetRow(rect, row);
-                Grid.SetColumn(rect, col);
 
-                mapGrid.Children.Add(rect);
+                MapTile mapTile = gameState.GetMapTile(row,col); //has to be stored before passing the value to TileButtonPressed
+                tileButton.Click += (sender, e) =>
+                {
+                    gameController.TileButtonPressed(mapTile, sender, e);
+                };
 
-                gameState.mapTiles[row][col].SetTileVisual(rect);
+                Grid.SetRow(tileButton, row);
+                Grid.SetColumn(tileButton, col);
+
+                mapGrid.Children.Add(tileButton);
+
+                gameState.GetMapTile(row,col).SetTileVisual(tileButton);
             }
         }
 
-        //mapTiles[0][4].Fill = Brushes.Red;
-
-
+        stack.Children.Add(currentTurnPlayer);
         stack.Children.Add(mapGrid);
         win.Content = stack;
         win.Show();
     }
 
+
+
 }
+
+
+
+
+

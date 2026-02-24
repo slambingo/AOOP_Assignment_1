@@ -10,39 +10,58 @@ using Avalonia.PropertyStore;
 class MapTile
 {
     //the data each grid element should have
-    private TileType type; // 
+    private TileType type; //since the save.txt can contain only integers, 0,1,2... reserved for player, -1 empty, -2 mountain
     private int ownerId; //-1 if nobody, 0,1,2... reserved for playerIds
-    private Rectangle visual; //rectangle that displays the color
+    private Button visual; //rectangle that displays the color
 
+    private int rowId;
+    private int colId;
     
-    private IBrush emptyTileColor = Brushes.DarkGray;
-    private IBrush mountainTileColor = Brushes.Black;
+    private IBrush color;
 
-    public MapTile(TileType typeInput, int ownerIdInput)
+    private GameColors gameColors = new GameColors();
+
+    public MapTile(int tileTypeId, int tileRowId, int tileColId)
     {
-        type = typeInput;
-        ownerId = ownerIdInput;
+        if(tileTypeId >= 0)
+        {
+            type = TileType.PlayerOwned;
+            ownerId = tileTypeId;
+            color = gameColors.GetPlayerColorByPlayerId(ownerId);
+        }
+        else if(tileTypeId == -1)
+        {
+            type = TileType.Empty;
+            color = gameColors.GetEmptyTileColor();
+        }
+        else if(tileTypeId == -2)
+        {
+            type = TileType.Mountain;
+            color = gameColors.GetMountainTileColor();
+        }
+
+        rowId = tileRowId;
+        colId = tileColId; 
     }
 
-    public void SetTileVisual(Rectangle visualInput)
+    public void SetTileVisual(Button visualInput)
     {
         visual = visualInput;
     }
 
-    public IBrush GetTileColor()
+    public IBrush GetColor()
     {
-        if(type == TileType.Empty)
-        {
-            return emptyTileColor;
-        }
-        else if(type == TileType.Mountain)
-        {
-            return mountainTileColor;
-        }
+        return color; 
+    }
 
-        return emptyTileColor; //idk what to return here
+    public int GetRowId()
+    {
+        return rowId;
+    }
 
-        
+    public int GetColId()
+    {
+        return colId;
     }
 
 }

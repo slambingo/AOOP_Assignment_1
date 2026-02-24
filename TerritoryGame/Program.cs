@@ -17,6 +17,7 @@ class Program
 
     
         GUI gui = new GUI();     
+        
         GameController gameController = new GameController(gui);
         
         //gameController.Run();
