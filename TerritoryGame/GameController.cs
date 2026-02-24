@@ -22,7 +22,7 @@ class GameController
     {
         gui = guiInput;
         gameState = new GameState();
-        gameState.LoadGameState();
+        gameState.LoadGameState(); //here the game state would be loaded
 
 
         gui.DisplayMapGrid(gameState);
