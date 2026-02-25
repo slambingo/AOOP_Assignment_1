@@ -12,7 +12,7 @@ class MapTile
     
     private TileType type; //since the save.txt can contain only integers, 0,1,2... reserved for player, -1 empty, -2 mountain
     private int ownerId; //-1 if nobody, 0,1,2... reserved for playerIds
-    private Button visual; //rectangle that displays the color
+    private Button visual; //button that displays the color
 
     private int rowId;
     private int colId;
@@ -51,6 +51,11 @@ class MapTile
         visual = visualInput;
     }
 
+    public Button GetTileVisual()
+    {
+        return visual;
+    }
+
     public IBrush GetColor()
     {
         return color; 
@@ -64,6 +69,23 @@ class MapTile
     public int GetColId()
     {
         return colId;
+    }
+
+    public int GetOwnerId()
+    {
+        return ownerId;
+    }
+
+    public TileType GetTileType()
+    {
+        return type;
+    }
+
+    public void UpdateTileAfterPressed(int nextOwnerId)
+    {
+        type = TileType.PlayerOwned;
+        ownerId = nextOwnerId;
+        color = gameColors.GetPlayerColorByPlayerId(ownerId);
     }
 
 }

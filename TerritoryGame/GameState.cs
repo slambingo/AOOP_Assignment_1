@@ -12,6 +12,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using Avalonia.Metadata;
 using System.IO;
+using System.Drawing;
 
 class GameState
 {
@@ -23,6 +24,8 @@ class GameState
     private int playerIdCount; //number of players in current game
     private int currentTurnPlayerId; //player who is on turn to play
 
+    private List<PlayerInfo> playerInfos = new List<PlayerInfo>();
+
     private List<List<MapTile>> mapTiles = new List<List<MapTile>>(); //[row][col]
 
     public int GetMapSizeRow()
@@ -33,6 +36,15 @@ class GameState
     public int GetMapSizeCol()
     {
         return mapSizeCol;
+    }
+
+    public void AdvanceCurrentTurnPlayerId()
+    {
+        currentTurnPlayerId++;
+        if(currentTurnPlayerId >= playerIdCount)
+        {
+            currentTurnPlayerId = 0;
+        }
     }
 
     public int GetCurrenTurnPlayerId()
@@ -47,7 +59,21 @@ class GameState
 
     public MapTile GetMapTile(int rowInput, int colInput)
     {
+        if(rowInput < 0 || rowInput >= mapSizeRow) return null;
+        if(colInput < 0 || colInput >= mapSizeCol) return null;
+
         return mapTiles[rowInput][colInput];
+    }
+
+    public int GetPlayerPointById(int playerId)
+    {
+        if(playerId < 0 || playerId >= playerIdCount) return -1;
+        return playerInfos[playerId].pointCount;
+    }
+
+    public void AwardPointToPlayerById(int playerId)
+    {
+        playerInfos[playerId].pointCount++;
     }
 
     //add function advancing the roundState
@@ -105,8 +131,42 @@ class GameState
 
             mapTiles.Add(mapRowTiles);
         }
+
+
+        //manage player list
+        playerInfos.Clear();
+        for(int i = 0; i < playerIdCount; i++)
+        {
+            PlayerInfo newPlayerInfo = new PlayerInfo(i);
+            playerInfos.Add(newPlayerInfo);
+        }
+        //assign points from loaded state
+        for(int row = 0; row < mapSizeRow; row++) 
+        {
+            for (int col = 0; col < mapSizeCol; col++)
+            {
+                if(GetMapTile(row,col).GetTileType() == TileType.PlayerOwned)
+                {
+                    playerInfos[GetMapTile(row,col).GetOwnerId()].pointCount++;
+                }
+            }
+        }
+
+
     }
 
 
 
+}
+
+class PlayerInfo
+{
+    public int id = -1;
+    public int pointCount = 0;
+
+    public PlayerInfo(int idInput)
+    {
+        id = idInput;
+        pointCount = 0;
+    }
 }

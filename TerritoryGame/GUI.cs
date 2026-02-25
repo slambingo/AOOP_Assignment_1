@@ -18,7 +18,6 @@ using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Data;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using System.Data;
@@ -29,7 +28,7 @@ class GUI
     public Window win;
     private List<List<Rectangle>> mapTiles = new List<List<Rectangle>>(); //[row][col]
 
-    
+    private TextBlock currentTurnPlayerText;
 
     public GUI()
     {
@@ -58,15 +57,47 @@ class GUI
             Margin = new Thickness(20),
         };
 
-        TextBlock currentTurnPlayer = new TextBlock
+
+        Button skipButton = new Button
         {
-            Text = "Player" + gameState.GetCurrenTurnPlayerId() + " to move",
-            FontSize = 25,
-            Background = gameState.GetCurrentTurnPlayerColor(),
-            
+            ClickMode = ClickMode.Press,
+            Width = 80,
+            Height = 30,
+            Content = "Skip"
+        
         };
+        skipButton.Click += gameController.OnSkipButtonPressed;
+
+
+        Button loadButton = new Button
+        {
+            ClickMode = ClickMode.Press,
+            Width = 80,
+            Height = 30,
+            Content = "Load"
+        };
+        loadButton.Click += gameController.OnLoadButtonPressed;
+
+        Button saveButton = new Button
+        {
+            ClickMode = ClickMode.Press,
+            Width = 80,
+            Height = 30,
+            Content = "Save"
+        };
+        saveButton.Click += gameController.OnSaveButtonPressed;
+
+
+
+
         
 
+        currentTurnPlayerText = new TextBlock
+        {
+            FontSize = 25,
+        };
+        UpdateCurrentTurnPlayerText(gameState);
+        
         //Declare the map
         Grid mapGrid = new Grid
         {
@@ -102,7 +133,7 @@ class GUI
                 MapTile mapTile = gameState.GetMapTile(row,col); //has to be stored before passing the value to TileButtonPressed
                 tileButton.Click += (sender, e) =>
                 {
-                    gameController.TileButtonPressed(mapTile, sender, e);
+                    gameController.OnTileButtonPressed(mapTile, sender, e);
                 };
 
                 Grid.SetRow(tileButton, row);
@@ -114,14 +145,36 @@ class GUI
             }
         }
 
-        stack.Children.Add(currentTurnPlayer);
+        stack.Children.Add(currentTurnPlayerText);
         stack.Children.Add(mapGrid);
+
+        stack.Children.Add(skipButton);
+        stack.Children.Add(loadButton);
+        stack.Children.Add(saveButton);
         win.Content = stack;
         win.Show();
     }
 
 
+    public void UpdateGameVisualsAfterTilePressed(MapTile pressedTile, GameState gameState)
+    {
+        //update -> currentTurnPlayerText
+        pressedTile.GetTileVisual().Background = pressedTile.GetColor();
+        UpdateCurrentTurnPlayerText(gameState);
+        
 
+    }
+
+    public void UpdateGameVisualsAfterTilePressed(GameState gameState)
+    {
+        UpdateCurrentTurnPlayerText(gameState);
+    }
+
+    public void UpdateCurrentTurnPlayerText(GameState gameState)
+    {
+        currentTurnPlayerText.Text = "Player" + gameState.GetCurrenTurnPlayerId() + " to move";
+        currentTurnPlayerText.Background = gameState.GetCurrentTurnPlayerColor();
+    }
 }
 
 
