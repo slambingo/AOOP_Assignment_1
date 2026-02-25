@@ -8,6 +8,6 @@
   - Set tiles (playerOwned, empty or mountain)
     - Maybe just cycle the possible ones when the tile is clicked
 
-## Additional features:
+## Missing Additional features (not needed):
 - Change hover color of buttons (50% alpha so player color is still visible)
 - Change line style between tiles (or remove lines and add black borders to buttons)
