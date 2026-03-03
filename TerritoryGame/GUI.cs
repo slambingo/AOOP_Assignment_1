@@ -21,11 +21,13 @@ using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.VisualTree;
 using System.Data;
+using System.Security.Cryptography;
 
 //have one function where we load everything, and dont reload every elemnt on screen just the ones that changed
 class GUI
 {
     public Window win;
+    private Window gameOverWindow;
     private List<List<Rectangle>> mapTiles = new List<List<Rectangle>>(); //[row][col]
 
     private TextBlock currentTurnPlayerText;
@@ -141,6 +143,44 @@ class GUI
         stack.Children.Add(saveButton);
         win.Content = stack;
         win.Show();
+    }
+    
+    public void DisplayGameOver(GameState gameState, GameController gameController)
+    {
+        var scores = gameState.GetPlayerScores();
+        var stack = new StackPanel
+        {
+            Margin = new Thickness(20),
+            Spacing = 10
+        };
+        stack.Children.Add(new TextBlock { Text = "Game Over!", FontSize = 24});
+        
+        foreach (var (id, points) in scores)
+        {
+            stack.Children.Add(new TextBlock
+            {
+               Text = $"Player {id}: {points} points",
+               Background = gameState.GetPlayerGameColor(id),
+               FontSize = 18 
+            });
+        }
+        
+        var resetButton = new Button{ Content = "Play again" };
+        resetButton.Click += (s, e) =>
+        {
+            gameOverWindow.Close();
+            gameController.OnResetButtonPressed(s, e);
+        };
+        stack.Children.Add(resetButton);
+        
+        gameOverWindow = new Window
+        {
+            Title = "Game Over",
+            Content = stack,
+            Width = 300,
+            Height = 400
+        };
+        gameOverWindow.Show();
     }
 
     public void UpdateGameVisualsAfterTilePressed(MapTile pressedTile, GameState gameState)

@@ -32,19 +32,24 @@ class GameController
     
     private void CheckGameOver()
     {
-        int skipped = 0;
-        while (!gameState.CurrentPlayerHasLegalMoves())
+        if (!gameState.CurrentPlayerHasLegalMoves())
         {
-            skipped++;
-            if (skipped >= gameState.GetPlayerIdCount())
+            gameState.EliminateCurrentPlayer();
+
+            // game ends when only 1 player remains (or all eliminated for a draw)
+            if (gameState.GetEliminatedCount() >= gameState.GetPlayerIdCount() - 1)
             {
-                // all players are stuck
-                // gui.ShowGameOver();
+                gameState.SetGameOver();
+                gui.DisplayGameOver(gameState, this);
                 Console.WriteLine("Game over");
                 return;
             }
-            
-            gameState.AdvanceCurrentTurnPlayerId();
+
+            // skip to next non-eliminated player
+            do { gameState.AdvanceCurrentTurnPlayerId(); }
+            while (gameState.IsPlayerEliminated(gameState.GetCurrenTurnPlayerId()));
+
+            gui.UpdateGameVisualsAfterTilePressed(gameState);
         }
     }
 
@@ -52,6 +57,8 @@ class GameController
     public void OnTileButtonPressed(MapTile pressedTile, object s, EventArgs e)
     {
         Console.WriteLine("Tile Button Pressed " + pressedTile.GetRowId() + ":" + pressedTile.GetColId());
+
+        if(gameState.IsGameOver()) return;
 
         //if tile is empty disallow placing
         if(pressedTile.GetTileType() != TileType.Empty) return;

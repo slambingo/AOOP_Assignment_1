@@ -1,6 +1,5 @@
 ## Missing features:
 
-- Check for game end → handle game end
 - Separate window tab for map creation
     - Set map size (e.g. 6x6)
     - Set player count

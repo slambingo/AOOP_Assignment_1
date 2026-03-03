@@ -15,6 +15,7 @@ using System.IO;
 using System.Drawing;
 using Microsoft.Win32.SafeHandles;
 using Avalonia.Platform;
+using System.Data.Common;
 
 class GameState
 {
@@ -28,6 +29,15 @@ class GameState
 
     private List<PlayerInfo> playerInfos = new List<PlayerInfo>();
     private List<List<MapTile>> mapTiles = new List<List<MapTile>>(); //[row][col]
+
+    private bool gameOver = false;
+    public bool IsGameOver() { return gameOver; }
+    public void SetGameOver() { gameOver = true; }
+
+    private List<int> eliminatedPlayers = new List<int>();
+    public void EliminateCurrentPlayer() { eliminatedPlayers.Add(currentTurnPlayerId); }
+    public bool IsPlayerEliminated(int id) { return eliminatedPlayers.Contains(id); }
+    public int GetEliminatedCount() { return eliminatedPlayers.Count; }
 
     public int GetMapSizeRow()
     {
@@ -114,6 +124,8 @@ class GameState
         mapSizeCol = loadedMapSizeCol;
         playerIdCount = 2; // default, in case the save file has no players yet
         currentTurnPlayerId = 0; // default to 0 since the save file doesnt include the data about this
+        gameOver = false;
+        eliminatedPlayers.Clear();
 
             //parsing written by AI
         var tilesValues = lines[1]  // +1 because line 0 is metadata
@@ -211,6 +223,8 @@ class GameState
         mapSizeCol = 5;
         playerIdCount = 2;
         currentTurnPlayerId = 0;
+        gameOver = false;
+        eliminatedPlayers.Clear();
 
         mapTiles.Clear();
         for (int row = 0; row < mapSizeRow; row ++)
@@ -257,6 +271,20 @@ class GameState
         }
 
         return false;
+    }
+    
+    public List<(int id, int points)> GetPlayerScores()
+    {
+        var scores = new List<(int id, int points)>();
+        for (int i = 0; i < playerIdCount; i++)
+            scores.Add((i, playerInfos[i].pointCount));
+        scores.Sort((a, b) => b.points.CompareTo(a.points));
+        return scores;
+    }
+    
+    public Avalonia.Media.IBrush GetPlayerGameColor(int playerId)
+    {
+        return gameColors.GetPlayerColorByPlayerId(playerId);
     }
 }
 
