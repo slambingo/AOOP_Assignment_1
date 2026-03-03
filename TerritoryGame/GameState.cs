@@ -13,6 +13,7 @@ using Avalonia.Media;
 using Avalonia.Metadata;
 using System.IO;
 using System.Drawing;
+using Microsoft.Win32.SafeHandles;
 
 class GameState
 {
@@ -25,7 +26,6 @@ class GameState
     private int currentTurnPlayerId; //player who is on turn to play
 
     private List<PlayerInfo> playerInfos = new List<PlayerInfo>();
-
     private List<List<MapTile>> mapTiles = new List<List<MapTile>>(); //[row][col]
 
     public int GetMapSizeRow()
@@ -102,36 +102,45 @@ class GameState
         //loaded values from the txt file
         int loadedMapSizeRow = int.Parse(firstLine[0]);
         int loadedMapSizeCol = int.Parse(firstLine[1]);
-        int loadedPlayerIdCount = int.Parse(firstLine[2]);
-        int loadedCurrentTurnPlayerId = int.Parse(firstLine[3]);
+        //int loadedLastPlayerId = int.Parse(firstLine[2]); // This is proprietary to this system
 
         mapSizeRow = loadedMapSizeRow;
         mapSizeCol = loadedMapSizeCol;
-        playerIdCount = loadedPlayerIdCount;
-        currentTurnPlayerId = loadedCurrentTurnPlayerId;
+        playerIdCount = 2; // default, in case the save file has no players yet
+        currentTurnPlayerId = 0; // default to 0 since the save file doesnt include the data about this
+
+            //parsing written by AI
+        var tilesValues = lines[1]  // +1 because line 0 is metadata
+            .Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(int.Parse)
+            .ToArray();
+
 
         for(int row = 0; row < mapSizeRow; row++)
         {
-            //parsing written by AI
-            var tilesValues = lines[row + 1]  // +1 because line 0 is metadata
-                .Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(int.Parse)
-                .ToArray();
-
             var mapRowTiles = new List<MapTile>();
-
             for (int col = 0; col < mapSizeCol; col++)
             {
-                int value = tilesValues[col]; // This is the saved value for row, col
+                int value = 0;
+                try {
+                    value = tilesValues[row * mapSizeCol + col]; // This is the saved value for row, col
+                    value -= 1;
+                } catch
+                {
+                    Console.WriteLine("Invalid save.txt format");
+                    return;
+                }
+            
+                // Get the highest value that should be the last player, hence should be also the number of players
+                if (value > playerIdCount) 
+                    playerIdCount = value + 1;
 
                 MapTile mapTile = new MapTile(value, row, col);
 
                 mapRowTiles.Add(mapTile);
             }
-
             mapTiles.Add(mapRowTiles);
         }
-
 
         //manage player list
         playerInfos.Clear();
@@ -140,6 +149,7 @@ class GameState
             PlayerInfo newPlayerInfo = new PlayerInfo(i);
             playerInfos.Add(newPlayerInfo);
         }
+
         //assign points from loaded state
         for(int row = 0; row < mapSizeRow; row++) 
         {
@@ -151,12 +161,43 @@ class GameState
                 }
             }
         }
-
-
     }
 
+    public void SaveGameState()
+    {
+        /*
+            expected format:
 
+            .txt
+            4 3
+            0 0 2 0 0 1 2 0 1 1 2 0
+            
+            where:
 
+            height width
+            pixel_values
+
+            values:
+            0 - empty
+            n - playerID + 1
+            
+            the n could also indicate the set number of players in the save
+        */
+        string filePath = AppContext.BaseDirectory + "save.txt"; //place the save.txt where your script run, for me TerritoryGame\bin\Debug\net10.0\save.txt
+        
+        // The first line
+        var save = $"{mapSizeRow} {mapSizeCol}\n";
+        
+        foreach(List<MapTile> tileRow in mapTiles)
+        {
+            foreach (MapTile tile in tileRow)
+            {
+                save += $"{tile.GetOwnerId() + 1} ";
+            }
+        }
+        
+        File.WriteAllText(filePath, save);
+    }
 }
 
 class PlayerInfo

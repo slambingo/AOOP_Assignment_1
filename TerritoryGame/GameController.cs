@@ -27,11 +27,7 @@ class GameController
         gameState = new GameState();
         gameState.LoadGameState(); //here the game state would be loaded
 
-
         gui.DisplayLoadedGameState(gameState, this);
-
-
-        
     }
 
     //I dont know if this function should be in gamestate or in here
@@ -51,7 +47,6 @@ class GameController
                 for(int adjacentCol = -1; adjacentCol < 2; adjacentCol++)
                 {
                     if(adjacentRow == 0 && adjacentCol == 0) continue; //we dont want to consider the clicked tile
-                        
   
                     MapTile adjacentMapTile = gameState.GetMapTile(pressedTile.GetRowId() + adjacentRow, pressedTile.GetColId() + adjacentCol);
                     if(adjacentMapTile == null) continue; //we dont want to consider "tiles" outside of bounds
@@ -59,7 +54,6 @@ class GameController
 
                     if(adjacentMapTile.GetOwnerId() == gameState.GetCurrenTurnPlayerId()) 
                         hasAdjacentCurrentTurnPlayerOwnedTile = true;
-                    
                 }
             }
 
@@ -71,7 +65,6 @@ class GameController
         pressedTile.UpdateTileAfterPressed(gameState.GetCurrenTurnPlayerId());
 
         gameState.AwardPointToPlayerById(gameState.GetCurrenTurnPlayerId());
-
         gameState.AdvanceCurrentTurnPlayerId();
 
         gui.UpdateGameVisualsAfterTilePressed(pressedTile, gameState); 
@@ -95,6 +88,7 @@ class GameController
 
     public void OnSaveButtonPressed(object s, EventArgs e)
     {
-        Console.WriteLine("OnSaveButtonPressed, no logic yet");
+        gameState.SaveGameState();
+        Console.WriteLine("OnSaveButtonPressed");
     }
 }

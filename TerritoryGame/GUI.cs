@@ -40,14 +40,10 @@ class GUI
         };
     }
 
-
-
     public void DisplayLoadedGameState(GameState gameState, GameController gameController)
     {
         int mapSizeRow = gameState.GetMapSizeRow();
         int mapSizeCol = gameState.GetMapSizeCol();
-
-        
 
         var stack = new StackPanel 
         {
@@ -56,7 +52,6 @@ class GUI
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(20),
         };
-
 
         Button skipButton = new Button
         {
@@ -67,7 +62,6 @@ class GUI
         
         };
         skipButton.Click += gameController.OnSkipButtonPressed;
-
 
         Button loadButton = new Button
         {
@@ -87,11 +81,6 @@ class GUI
         };
         saveButton.Click += gameController.OnSaveButtonPressed;
 
-
-
-
-        
-
         currentTurnPlayerText = new TextBlock
         {
             FontSize = 25,
@@ -103,7 +92,6 @@ class GUI
         {
             ShowGridLines = true
         };
-
         
         //Set rows and cols count
         for(int row = 0; row < mapSizeRow; row++)
@@ -155,14 +143,11 @@ class GUI
         win.Show();
     }
 
-
     public void UpdateGameVisualsAfterTilePressed(MapTile pressedTile, GameState gameState)
     {
         //update -> currentTurnPlayerText
         pressedTile.GetTileVisual().Background = pressedTile.GetColor();
         UpdateCurrentTurnPlayerText(gameState);
-        
-
     }
 
     public void UpdateGameVisualsAfterTilePressed(GameState gameState)

@@ -1205,19 +1205,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\sando\\.nuget\\packages\\": {}
+    "C:\\Users\\simon\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\SduUniversity\\MyCourses\\Semester4\\AOOP\\Assignment1\\TerritoryGame\\TerritoryGame.csproj",
+      "projectUniqueName": "C:\\Users\\simon\\Documents\\notes\\sem 4\\AOOP\\AOOP_Assignment_1\\TerritoryGame\\TerritoryGame.csproj",
       "projectName": "TerritoryGame",
-      "projectPath": "C:\\SduUniversity\\MyCourses\\Semester4\\AOOP\\Assignment1\\TerritoryGame\\TerritoryGame.csproj",
-      "packagesPath": "C:\\Users\\sando\\.nuget\\packages\\",
-      "outputPath": "C:\\SduUniversity\\MyCourses\\Semester4\\AOOP\\Assignment1\\TerritoryGame\\obj\\",
+      "projectPath": "C:\\Users\\simon\\Documents\\notes\\sem 4\\AOOP\\AOOP_Assignment_1\\TerritoryGame\\TerritoryGame.csproj",
+      "packagesPath": "C:\\Users\\simon\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\simon\\Documents\\notes\\sem 4\\AOOP\\AOOP_Assignment_1\\TerritoryGame\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\sando\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\simon\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -1276,7 +1276,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
