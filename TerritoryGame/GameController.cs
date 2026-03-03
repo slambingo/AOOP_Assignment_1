@@ -29,6 +29,24 @@ class GameController
 
         gui.DisplayLoadedGameState(gameState, this);
     }
+    
+    private void CheckGameOver()
+    {
+        int skipped = 0;
+        while (!gameState.CurrentPlayerHasLegalMoves())
+        {
+            skipped++;
+            if (skipped >= gameState.GetPlayerIdCount())
+            {
+                // all players are stuck
+                // gui.ShowGameOver();
+                Console.WriteLine("Game over");
+                return;
+            }
+            
+            gameState.AdvanceCurrentTurnPlayerId();
+        }
+    }
 
     //I dont know if this function should be in gamestate or in here
     public void OnTileButtonPressed(MapTile pressedTile, object s, EventArgs e)
@@ -42,7 +60,7 @@ class GameController
         {
             //CHECK If the clicked square has a adjacent color to it that is the same? corners count   
             bool hasAdjacentCurrentTurnPlayerOwnedTile = false;         
-            for(int adjacentRow = -1; adjacentRow < 2; adjacentRow++)
+            for(int adjacentRow =-1; adjacentRow < 2; adjacentRow++)
             {
                 for(int adjacentCol = -1; adjacentCol < 2; adjacentCol++)
                 {
@@ -68,14 +86,16 @@ class GameController
         gameState.AdvanceCurrentTurnPlayerId();
 
         gui.UpdateGameVisualsAfterTilePressed(pressedTile, gameState); 
+        
+        CheckGameOver();
     }
 
 
-    public void OnSkipButtonPressed(object s, EventArgs e)
+    public void OnResetButtonPressed(object s, EventArgs e)
     {
-        gameState.AdvanceCurrentTurnPlayerId();
-        gui.UpdateGameVisualsAfterTilePressed(gameState);
-        Console.WriteLine("OnSkipButtonPressed");
+        gameState.NewGameState();
+        gui.DisplayLoadedGameState(gameState, this);
+        Console.WriteLine("OnResetButtonPressed");
     }
 
     public void OnLoadButtonPressed(object s, EventArgs e)

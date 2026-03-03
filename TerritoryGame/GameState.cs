@@ -14,6 +14,7 @@ using Avalonia.Metadata;
 using System.IO;
 using System.Drawing;
 using Microsoft.Win32.SafeHandles;
+using Avalonia.Platform;
 
 class GameState
 {
@@ -36,6 +37,11 @@ class GameState
     public int GetMapSizeCol()
     {
         return mapSizeCol;
+    }
+    
+    public int GetPlayerIdCount()
+    {
+        return playerIdCount;
     }
 
     public void AdvanceCurrentTurnPlayerId()
@@ -197,6 +203,60 @@ class GameState
         }
         
         File.WriteAllText(filePath, save);
+    }
+    
+    public void NewGameState()
+    {
+        mapSizeRow = 4;
+        mapSizeCol = 5;
+        playerIdCount = 2;
+        currentTurnPlayerId = 0;
+
+        mapTiles.Clear();
+        for (int row = 0; row < mapSizeRow; row ++)
+        {
+            var mapRowTiles = new List<MapTile>();
+            for (int col = 0; col < mapSizeCol; col++)
+                mapRowTiles.Add(new MapTile(-1, row, col));
+            mapTiles.Add(mapRowTiles);
+        }
+        
+        playerInfos.Clear();
+        for (int i = 0; i < playerIdCount; i++)
+            playerInfos.Add(new PlayerInfo(i));
+    }
+
+    // goes through all the tiles, checks if the empty tiles have a neighbouring player tile
+    // if not, player can't place tile, so no legal moves
+    public bool CurrentPlayerHasLegalMoves()
+    {
+        // return if the player doesnt have any tile yet
+        if (GetPlayerPointById(currentTurnPlayerId) == 0) return true;
+
+        foreach (List<MapTile> tileRow in mapTiles)
+        {
+            foreach (MapTile tile in tileRow)
+            {
+                // skip owned tiles
+                if (tile.GetOwnerId() != -1)
+                    continue;
+
+                for(int adjacentRow =-1; adjacentRow < 2; adjacentRow++)
+                {
+                    for(int adjacentCol = -1; adjacentCol < 2; adjacentCol++)
+                    {
+                        MapTile adjacentMapTile = GetMapTile(tile.GetRowId() + adjacentRow, tile.GetColId() + adjacentCol);
+                        if(adjacentMapTile == null) continue; //we dont want to consider "tiles" outside of bounds
+                            
+
+                        if(adjacentMapTile.GetOwnerId() == GetCurrenTurnPlayerId()) 
+                            return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 }
 

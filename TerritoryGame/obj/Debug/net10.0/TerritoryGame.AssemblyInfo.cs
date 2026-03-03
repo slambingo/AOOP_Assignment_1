@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TerritoryGame")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8d9c11bdb694f0fdee32431510a027b2e20e043b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+643358eb1cdcffa263b84549ee6f5d1ce079b699")]
 [assembly: System.Reflection.AssemblyProductAttribute("TerritoryGame")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TerritoryGame")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

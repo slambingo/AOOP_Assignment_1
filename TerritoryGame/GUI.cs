@@ -53,15 +53,15 @@ class GUI
             Margin = new Thickness(20),
         };
 
-        Button skipButton = new Button
+        Button resetButton = new Button
         {
             ClickMode = ClickMode.Press,
             Width = 80,
             Height = 30,
-            Content = "Skip"
+            Content = "Reset"
         
         };
-        skipButton.Click += gameController.OnSkipButtonPressed;
+        resetButton.Click += gameController.OnResetButtonPressed;
 
         Button loadButton = new Button
         {
@@ -136,7 +136,7 @@ class GUI
         stack.Children.Add(currentTurnPlayerText);
         stack.Children.Add(mapGrid);
 
-        stack.Children.Add(skipButton);
+        stack.Children.Add(resetButton);
         stack.Children.Add(loadButton);
         stack.Children.Add(saveButton);
         win.Content = stack;
