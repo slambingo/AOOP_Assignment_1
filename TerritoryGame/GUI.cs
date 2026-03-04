@@ -32,6 +32,8 @@ class GUI
 
     private TextBlock currentTurnPlayerText;
 
+
+    private TabControl tabControl;
     private TabItem gameTab;
     private TabItem createTab;
 
@@ -44,8 +46,7 @@ class GUI
             Width = 500, 
         };
 
-        var tabControl = new TabControl();
-
+        tabControl = new TabControl();
         gameTab = new TabItem
         {
             Header = "Activate Game"
@@ -55,13 +56,13 @@ class GUI
         {
             Header = "Map Creation"
         };
+
+        tabControl.ItemsSource = new TabItem[] {gameTab, createTab};
+        win.Content = tabControl;
     }
 
     public void DisplayLoadedGameState(GameState gameState, GameController gameController)
     {
-        
-        gameTab.Content = null;
-
         int mapSizeRow = gameState.GetMapSizeRow();
         int mapSizeCol = gameState.GetMapSizeCol();
 
@@ -148,8 +149,9 @@ class GUI
 
         stack.Children.Add(loadButton);
         stack.Children.Add(saveButton);
-        win.Content = stack;
-        win.Show();
+
+        gameTab.Content = stack;
+        //win.Show();
     }
     
     public void DisplayGameOver(GameState gameState, GameController gameController)
