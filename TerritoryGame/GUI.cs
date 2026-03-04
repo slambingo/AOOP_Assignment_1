@@ -32,6 +32,9 @@ class GUI
 
     private TextBlock currentTurnPlayerText;
 
+    private TabItem gameTab;
+    private TabItem createTab;
+
     public GUI()
     {
         win = new Window
@@ -40,10 +43,25 @@ class GUI
             Height = 500, 
             Width = 500, 
         };
+
+        var tabControl = new TabControl();
+
+        gameTab = new TabItem
+        {
+            Header = "Activate Game"
+        };
+
+        createTab = new TabItem
+        {
+            Header = "Map Creation"
+        };
     }
 
     public void DisplayLoadedGameState(GameState gameState, GameController gameController)
     {
+        
+        gameTab.Content = null;
+
         int mapSizeRow = gameState.GetMapSizeRow();
         int mapSizeCol = gameState.GetMapSizeCol();
 
@@ -54,16 +72,6 @@ class GUI
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(20),
         };
-
-        Button resetButton = new Button
-        {
-            ClickMode = ClickMode.Press,
-            Width = 80,
-            Height = 30,
-            Content = "Reset"
-        
-        };
-        resetButton.Click += gameController.OnResetButtonPressed;
 
         Button loadButton = new Button
         {
@@ -138,7 +146,6 @@ class GUI
         stack.Children.Add(currentTurnPlayerText);
         stack.Children.Add(mapGrid);
 
-        stack.Children.Add(resetButton);
         stack.Children.Add(loadButton);
         stack.Children.Add(saveButton);
         win.Content = stack;
@@ -169,7 +176,7 @@ class GUI
         resetButton.Click += (s, e) =>
         {
             gameOverWindow.Close();
-            gameController.OnResetButtonPressed(s, e);
+            gameController.OnLoadButtonPressed(s, e);
         };
         stack.Children.Add(resetButton);
         

@@ -97,14 +97,6 @@ class GameController
         CheckGameOver();
     }
 
-
-    public void OnResetButtonPressed(object s, EventArgs e)
-    {
-        gameState.NewGameState();
-        gui.DisplayLoadedGameState(gameState, this);
-        Console.WriteLine("OnResetButtonPressed");
-    }
-
     public void OnLoadButtonPressed(object s, EventArgs e)
     {
         gameState = new GameState();
