@@ -20,6 +20,8 @@ class GameController
     private GameColors gameColors = new GameColors();
     private GameState gameState; 
 
+    
+
     public GameController(GUI guiInput)
     {
         gui = guiInput;
@@ -40,7 +42,7 @@ class GameController
             if (gameState.GetEliminatedCount() >= gameState.GetPlayerIdCount() - 1)
             {
                 gameState.SetGameOver();
-                gui.DisplayGameOver(gameState, this);
+                gui.DisplayGameOver(gameState);
                 Console.WriteLine("Game over");
                 return;
             }
@@ -103,11 +105,5 @@ class GameController
         gameState.LoadGameState(); 
         gui.DisplayLoadedGameState(gameState, this);
         Console.WriteLine("OnLoadButtonPressed");
-    }
-
-    public void OnSaveButtonPressed(object s, EventArgs e)
-    {
-        gameState.SaveGameState();
-        Console.WriteLine("OnSaveButtonPressed");
     }
 }
