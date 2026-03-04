@@ -237,9 +237,11 @@ class GameState
         {
             foreach (MapTile tile in tileRow)
             {
-                // skip owned tiles
-                if (tile.GetOwnerId() != -1)
+                // skip invalid tiles
+                if (tile.GetTileType() != TileType.Empty)
                     continue;
+
+                
 
                 for(int adjacentRow =-1; adjacentRow < 2; adjacentRow++)
                 {
