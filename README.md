@@ -1,3 +1,5 @@
+![Demo](demo.gif)
+
 # How to play
 
 ## Generating map
