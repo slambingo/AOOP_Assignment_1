@@ -34,8 +34,8 @@ class GameController
     
     private void CheckGameOver()
     {
-        // if the current player has no valid tiles to claim, they are eliminated
-        if (!gameState.CurrentPlayerHasLegalMoves())
+        // loop in case multiple players in a row have no legal moves
+        while (!gameState.CurrentPlayerHasLegalMoves())
         {
             gameState.EliminateCurrentPlayer();
 
@@ -51,9 +51,9 @@ class GameController
             // advance turn, skipping over any already-eliminated players
             do { gameState.AdvanceCurrentTurnPlayerId(); }
             while (gameState.IsPlayerEliminated(gameState.GetCurrenTurnPlayerId()));
-
-            gui.UpdateGameVisualsAfterTilePressed(gameState);
         }
+
+        gui.UpdateGameVisualsAfterTilePressed(gameState);
     }
 
     //I dont know if this function should be in gamestate or in here

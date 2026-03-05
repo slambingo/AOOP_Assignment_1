@@ -295,7 +295,19 @@ class GUI
             Spacing = 10
         };
         stack.Children.Add(new TextBlock { Text = "Game Over!", FontSize = 24});
-        
+
+        // announce winner or tie
+        bool isTie = scores.Count >= 2 && scores[0].points == scores[1].points;
+        string resultText = isTie
+            ? "It's a tie!"
+            : $"Player {scores[0].id} wins!";
+        stack.Children.Add(new TextBlock
+        {
+            Text = resultText,
+            FontSize = 20,
+            Background = isTie ? null : gameState.GetPlayerGameColor(scores[0].id)
+        });
+
         foreach (var (id, points) in scores)
         {
             stack.Children.Add(new TextBlock
