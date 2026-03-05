@@ -1,7 +1,8 @@
 ## Missing features:
 
-- Game ends when 1 player gets blocked in (also when there are more than 2 players -> shouldnt be the case)
-- Display who won or if its a tie
+- ~~Game ends when 1 player gets blocked in (also when there are more than 2 players -> shouldnt be the case)~~
+- ~~Display who won or if its a tie~~
+- Everything is done
 
 ## Missing Additional features (not needed):
 
