@@ -32,11 +32,12 @@ class GameController
     
     private void CheckGameOver()
     {
+        // if the current player has no valid tiles to claim, they are eliminated
         if (!gameState.CurrentPlayerHasLegalMoves())
         {
             gameState.EliminateCurrentPlayer();
 
-            // game ends when only 1 player remains (or all eliminated for a draw)
+            // game ends when all but one player are eliminated (or all for a draw)
             if (gameState.GetEliminatedCount() >= gameState.GetPlayerIdCount() - 1)
             {
                 gameState.SetGameOver();
@@ -45,7 +46,7 @@ class GameController
                 return;
             }
 
-            // skip to next non-eliminated player
+            // advance turn, skipping over any already-eliminated players
             do { gameState.AdvanceCurrentTurnPlayerId(); }
             while (gameState.IsPlayerEliminated(gameState.GetCurrenTurnPlayerId()));
 

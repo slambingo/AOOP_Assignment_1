@@ -34,10 +34,11 @@ class GameState
     public bool IsGameOver() { return gameOver; }
     public void SetGameOver() { gameOver = true; }
 
+    // tracks players who have no legal moves left and are out of the game
     private List<int> eliminatedPlayers = new List<int>();
-    public void EliminateCurrentPlayer() { eliminatedPlayers.Add(currentTurnPlayerId); }
-    public bool IsPlayerEliminated(int id) { return eliminatedPlayers.Contains(id); }
-    public int GetEliminatedCount() { return eliminatedPlayers.Count; }
+    public void EliminateCurrentPlayer() { eliminatedPlayers.Add(currentTurnPlayerId); } // marks current player as eliminated
+    public bool IsPlayerEliminated(int id) { return eliminatedPlayers.Contains(id); } // checks if a player is eliminated
+    public int GetEliminatedCount() { return eliminatedPlayers.Count; } // how many players are eliminated
 
     public int GetMapSizeRow()
     {
