@@ -95,25 +95,8 @@ class GUI
         UpdateMapCreationGrid(true);
 
         playerCountSlider = new GameCreationSlider("Player Count", 2, 10);
-        rowSizeSlider = new GameCreationSlider("Row Count", 2, 10);
-        colSizeSlider = new GameCreationSlider("Col Count", 2, 10);
-
-
-        
-        /*
-        rowSizeSlider.slider.ValueChanged += (s, e) =>
-        {
-            mapCreationController.UpdateMapCreation(rowSizeSlider.GetSliderValue(), colSizeSlider.GetSliderValue(), playerCountSlider.GetSliderValue(), s, e);
-        };
-        colSizeSlider.slider.ValueChanged += (s, e) =>
-        {
-            mapCreationController.UpdateMapCreation(rowSizeSlider.GetSliderValue(), colSizeSlider.GetSliderValue(), playerCountSlider.GetSliderValue(), s, e);
-        };
-        playerCountSlider.slider.ValueChanged += (s, e) =>
-        {
-            mapCreationController.UpdateMapCreation(rowSizeSlider.GetSliderValue(), colSizeSlider.GetSliderValue(), playerCountSlider.GetSliderValue(), s, e);
-        };
-        */
+        rowSizeSlider = new GameCreationSlider("Row Count", 2, 9);
+        colSizeSlider = new GameCreationSlider("Col Count", 2, 15);
 
         Button generateButton = new Button
         {
@@ -161,7 +144,8 @@ class GUI
         {
             mapCreationGrid = new Grid
             {
-                ShowGridLines = true
+                ShowGridLines = true,
+                HorizontalAlignment = HorizontalAlignment.Left
             };  
         }
         else
@@ -256,7 +240,8 @@ class GUI
         //Declare the map
         Grid mapGrid = new Grid
         {
-            ShowGridLines = true
+            ShowGridLines = true,
+            HorizontalAlignment = HorizontalAlignment.Left
         };
         
         //Set rows and cols count
