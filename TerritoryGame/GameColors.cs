@@ -3,7 +3,7 @@ using Avalonia.Media;
 
 class GameColors
 {
-    private IBrush[] playerColors = [Brushes.Blue, Brushes.Red, Brushes.Green, Brushes.Purple, Brushes.Yellow];
+    private IBrush[] playerColors = [Brushes.Blue, Brushes.Red, Brushes.Green, Brushes.Purple, Brushes.Yellow, Brushes.Orange, Brushes.Aqua, Brushes.Pink, Brushes.LawnGreen, Brushes.PeachPuff];
     private IBrush emptyTileColor = Brushes.DarkGray;
     private IBrush mountainTileColor = Brushes.Black;
 

@@ -1,11 +1,7 @@
 ## Missing features:
 
-- Separate window tab for map creation
-    - Set map size (e.g. 6x6)
-    - Set player count
-    - Set current turn player
-    - Set tiles (playerOwned, empty or mountain)
-        - Maybe just cycle the possible ones when the tile is clicked
+- Game ends when 1 player gets blocked in (also when there are more than 2 players -> shouldnt be the case)
+- Display who won or if its a tie
 
 ## Missing Additional features (not needed):
 

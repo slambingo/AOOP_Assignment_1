@@ -19,7 +19,6 @@ using System.Data.Common;
 
 class GameState
 {
-
     private GameColors gameColors = new GameColors();
     private int mapSizeRow;
     private int mapSizeCol;  
@@ -40,20 +39,11 @@ class GameState
     public bool IsPlayerEliminated(int id) { return eliminatedPlayers.Contains(id); } // checks if a player is eliminated
     public int GetEliminatedCount() { return eliminatedPlayers.Count; } // how many players are eliminated
 
-    public int GetMapSizeRow()
-    {
-        return mapSizeRow;
-    }
+    public int GetMapSizeRow() {return mapSizeRow;}
 
-    public int GetMapSizeCol()
-    {
-        return mapSizeCol;
-    }
-    
-    public int GetPlayerIdCount()
-    {
-        return playerIdCount;
-    }
+    public int GetMapSizeCol() {return mapSizeCol;}
+
+    public int GetPlayerIdCount() {return playerIdCount;}
 
     public void AdvanceCurrentTurnPlayerId()
     {
@@ -64,10 +54,7 @@ class GameState
         }
     }
 
-    public int GetCurrenTurnPlayerId()
-    {
-        return currentTurnPlayerId;
-    }
+    public int GetCurrenTurnPlayerId() {return currentTurnPlayerId;}
 
     public IBrush GetCurrentTurnPlayerColor()
     {
@@ -119,16 +106,16 @@ class GameState
         //loaded values from the txt file
         int loadedMapSizeRow = int.Parse(firstLine[0]);
         int loadedMapSizeCol = int.Parse(firstLine[1]);
-        //int loadedLastPlayerId = int.Parse(firstLine[2]); // This is proprietary to this system
+        int loadedLastPlayerId = int.Parse(firstLine[2]); 
 
         mapSizeRow = loadedMapSizeRow;
         mapSizeCol = loadedMapSizeCol;
-        playerIdCount = 2; // default, in case the save file has no players yet
+        playerIdCount = loadedLastPlayerId; // default, in case the save file has no players yet
         currentTurnPlayerId = 0; // default to 0 since the save file doesnt include the data about this
         gameOver = false;
         eliminatedPlayers.Clear();
 
-            //parsing written by AI
+        //parsing written by AI
         var tilesValues = lines[1]  // +1 because line 0 is metadata
             .Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries)
             .Select(int.Parse)
@@ -143,17 +130,12 @@ class GameState
                 int value = 0;
                 try {
                     value = tilesValues[row * mapSizeCol + col]; // This is the saved value for row, col
-                    value -= 1;
                 } catch
                 {
                     Console.WriteLine("Invalid save.txt format");
                     return;
                 }
             
-                // Get the highest value that should be the last player, hence should be also the number of players
-                if (value > playerIdCount) 
-                    playerIdCount = value + 1;
-
                 MapTile mapTile = new MapTile(value, row, col);
 
                 mapRowTiles.Add(mapTile);
@@ -188,12 +170,11 @@ class GameState
             expected format:
 
             .txt
-            4 3
+            4 3 2
             0 0 2 0 0 1 2 0 1 1 2 0
             
             where:
-
-            height width
+            height width playerCount
             pixel_values
 
             values:
@@ -205,24 +186,29 @@ class GameState
         string filePath = AppContext.BaseDirectory + "save.txt"; //place the save.txt where your script run, for me TerritoryGame\bin\Debug\net10.0\save.txt
         
         // The first line
-        var save = $"{mapSizeRow} {mapSizeCol}\n";
+        var save = $"{mapSizeRow} {mapSizeCol} {playerIdCount}\n";
         
         foreach(List<MapTile> tileRow in mapTiles)
         {
             foreach (MapTile tile in tileRow)
             {
-                save += $"{tile.GetOwnerId() + 1} ";
+                if(tile.GetTileType() == TileType.PlayerOwned) save += $"{tile.GetOwnerId()} ";
+                if(tile.GetTileType() == TileType.Empty) save += $"{-1} ";
+                if(tile.GetTileType() == TileType.Mountain) save += $"{-2} ";
+                
             }
         }
         
         File.WriteAllText(filePath, save);
     }
-    
-    public void NewGameState()
+
+
+    //used for map creation
+    public void CreateGameState(int mapSizeRowInput, int mapSizeColInput, int playerIdCountInput)
     {
-        mapSizeRow = 4;
-        mapSizeCol = 5;
-        playerIdCount = 2;
+        mapSizeRow = mapSizeRowInput;
+        mapSizeCol = mapSizeColInput;
+        playerIdCount = playerIdCountInput;
         currentTurnPlayerId = 0;
         gameOver = false;
         eliminatedPlayers.Clear();
@@ -252,9 +238,11 @@ class GameState
         {
             foreach (MapTile tile in tileRow)
             {
-                // skip owned tiles
-                if (tile.GetOwnerId() != -1)
+                // skip invalid tiles
+                if (tile.GetTileType() != TileType.Empty)
                     continue;
+
+                
 
                 for(int adjacentRow =-1; adjacentRow < 2; adjacentRow++)
                 {

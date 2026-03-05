@@ -88,6 +88,22 @@ class MapTile
         color = gameColors.GetPlayerColorByPlayerId(ownerId);
     }
 
+    public void ToggleEmptyOrMountainTile()
+    {
+        if(type == TileType.Empty)
+        {
+            type = TileType.Mountain;
+            color = gameColors.GetMountainTileColor();
+        }
+        else if(type == TileType.Mountain)
+        {
+            type = TileType.Empty;
+            color = gameColors.GetEmptyTileColor();
+        }
+
+        
+    }
+
 }
 
 public enum TileType

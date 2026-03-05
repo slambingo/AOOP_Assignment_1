@@ -16,11 +16,11 @@ class Program
         app.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Light;
 
     
-        GUI gui = new GUI();     
-        
+        GUI gui = new GUI();  
+        MapCreationController mapCreationController = new MapCreationController(gui);   
         GameController gameController = new GameController(gui);
+        gui.SetControllers(gameController, mapCreationController);
         
-        //gameController.Run();
         app.Run(gui.win);
     }
 }

@@ -32,6 +32,21 @@ class GUI
 
     private TextBlock currentTurnPlayerText;
 
+    private GameColors gameColors = new GameColors();
+
+    private TabControl tabControl;
+    private TabItem gameTab;
+    private TabItem creationTab;
+
+    private GameCreationSlider playerCountSlider;
+    private GameCreationSlider rowSizeSlider;
+    private GameCreationSlider colSizeSlider;
+
+    private Grid mapCreationGrid;
+
+    private GameController gameController;
+    private MapCreationController mapCreationController;
+
     public GUI()
     {
         win = new Window
@@ -40,6 +55,158 @@ class GUI
             Height = 500, 
             Width = 500, 
         };
+
+        tabControl = new TabControl();
+        gameTab = new TabItem
+        {
+            Header = "Activate Game"
+        };
+
+        creationTab = new TabItem
+        {
+            Header = "Map Creation"
+        };
+        creationTab.Tapped += DisplayMapCreationTab;
+
+        tabControl.ItemsSource = new TabItem[] {gameTab, creationTab};
+        win.Content = tabControl;
+        
+    }
+
+    public void SetControllers(GameController gameControllerInput, MapCreationController mapCreationControllerInput)
+    {
+        gameController = gameControllerInput;
+        mapCreationController = mapCreationControllerInput;
+    }
+
+    public void DisplayMapCreationTab(object s, EventArgs e)
+    {
+        var stack = new StackPanel 
+        {
+            Orientation = Orientation.Vertical,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(20),
+        };
+
+
+
+
+        UpdateMapCreationGrid(true);
+
+        playerCountSlider = new GameCreationSlider("Player Count", 2, 10);
+        rowSizeSlider = new GameCreationSlider("Row Count", 2, 9);
+        colSizeSlider = new GameCreationSlider("Col Count", 2, 15);
+
+        Button generateButton = new Button
+        {
+            ClickMode = ClickMode.Press,
+            Width = 80,
+            Height = 30,
+            Content = "Generate"
+        };
+        generateButton.Click += (s, e) =>
+        {
+            mapCreationController.UpdateMapCreation(rowSizeSlider.GetSliderValue(), colSizeSlider.GetSliderValue(), playerCountSlider.GetSliderValue(), s, e);
+        }; 
+
+        Button saveButton = new Button
+        {
+            ClickMode = ClickMode.Press,
+            Width = 80,
+            Height = 30,
+            Content = "Save"
+        };
+        saveButton.Click += mapCreationController.OnSaveButtonPressed;
+
+
+        
+
+        stack.Children.Add(playerCountSlider.stack);
+        stack.Children.Add(rowSizeSlider.stack);
+        stack.Children.Add(colSizeSlider.stack);
+        stack.Children.Add(generateButton);
+        stack.Children.Add(mapCreationGrid);
+        stack.Children.Add(saveButton);
+
+        creationTab.Content = stack;
+
+
+    }
+
+    public void UpdateMapCreationGrid(bool firstSetUp)
+    {
+        
+        GameState gameState = mapCreationController.GetMapCreation();
+       
+        //Declare the map
+        if(firstSetUp)
+        {
+            mapCreationGrid = new Grid
+            {
+                ShowGridLines = true,
+                HorizontalAlignment = HorizontalAlignment.Left
+            };  
+        }
+        else
+        {
+            mapCreationGrid.RowDefinitions.Clear();
+            mapCreationGrid.ColumnDefinitions.Clear();
+        }
+
+        
+        int mapSizeRow =  gameState.GetMapSizeRow();
+        int mapSizeCol = gameState.GetMapSizeCol();
+        Console.WriteLine("Updating map creation grid with row: " + mapSizeRow + " col: " + mapSizeCol);
+ 
+        SetUpMapGid(mapCreationGrid, mapSizeRow, mapSizeCol);
+
+    
+        for(int row = 0; row < mapSizeRow; row++)
+        {
+            for(int col = 0; col < mapSizeCol; col++)
+            {
+                var tileColor = gameColors.GetEmptyTileColor();
+
+                Button tileButton = new Button
+                {
+                    ClickMode = ClickMode.Press,
+                    Width = 50,
+                    Height = 50,
+                    Background = tileColor,
+                    CornerRadius = new CornerRadius(0),
+                    //somehow set the hover color 
+                };
+                
+                
+                MapTile mapTile = gameState.GetMapTile(row,col); //has to be stored before passing the value to TileButtonPressed
+                tileButton.Click += (sender, e) =>
+                {
+                    mapCreationController.OnTileButtonPressed(mapTile, sender, e);
+                };
+
+                Grid.SetRow(tileButton, row);
+                Grid.SetColumn(tileButton, col);
+
+                mapCreationGrid.Children.Add(tileButton);
+
+                gameState.GetMapTile(row,col).SetTileVisual(tileButton);
+            }
+        }
+    }
+
+    public void SetUpMapGid(Grid mapGrid, int mapSizeRow, int mapSizeCol)
+    {
+        //mapGrid.RowDefinitions.Clear();
+        //mapGrid.ColumnDefinitions.Clear();
+
+        //Set rows and cols count
+        for(int row = 0; row < mapSizeRow; row++)
+            mapGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
+        
+
+        for(int col = 0; col < mapSizeCol; col++)
+            mapGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
     }
 
     public void DisplayLoadedGameState(GameState gameState, GameController gameController)
@@ -55,16 +222,6 @@ class GUI
             Margin = new Thickness(20),
         };
 
-        Button resetButton = new Button
-        {
-            ClickMode = ClickMode.Press,
-            Width = 80,
-            Height = 30,
-            Content = "Reset"
-        
-        };
-        resetButton.Click += gameController.OnResetButtonPressed;
-
         Button loadButton = new Button
         {
             ClickMode = ClickMode.Press,
@@ -73,15 +230,6 @@ class GUI
             Content = "Load"
         };
         loadButton.Click += gameController.OnLoadButtonPressed;
-
-        Button saveButton = new Button
-        {
-            ClickMode = ClickMode.Press,
-            Width = 80,
-            Height = 30,
-            Content = "Save"
-        };
-        saveButton.Click += gameController.OnSaveButtonPressed;
 
         currentTurnPlayerText = new TextBlock
         {
@@ -92,16 +240,12 @@ class GUI
         //Declare the map
         Grid mapGrid = new Grid
         {
-            ShowGridLines = true
+            ShowGridLines = true,
+            HorizontalAlignment = HorizontalAlignment.Left
         };
         
         //Set rows and cols count
-        for(int row = 0; row < mapSizeRow; row++)
-            mapGrid.RowDefinitions.Add(new RowDefinition(GridLength.Star));
-        
-
-        for(int col = 0; col < mapSizeCol; col++)
-            mapGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
+        SetUpMapGid(mapGrid, mapSizeRow, mapSizeCol);
         
 
         for(int row = 0; row < mapSizeRow; row++)
@@ -138,14 +282,11 @@ class GUI
         stack.Children.Add(currentTurnPlayerText);
         stack.Children.Add(mapGrid);
 
-        stack.Children.Add(resetButton);
         stack.Children.Add(loadButton);
-        stack.Children.Add(saveButton);
-        win.Content = stack;
-        win.Show();
+        gameTab.Content = stack;
     }
     
-    public void DisplayGameOver(GameState gameState, GameController gameController)
+    public void DisplayGameOver(GameState gameState)
     {
         var scores = gameState.GetPlayerScores();
         var stack = new StackPanel
@@ -169,7 +310,7 @@ class GUI
         resetButton.Click += (s, e) =>
         {
             gameOverWindow.Close();
-            gameController.OnResetButtonPressed(s, e);
+            gameController.OnLoadButtonPressed(s, e);
         };
         stack.Children.Add(resetButton);
         
