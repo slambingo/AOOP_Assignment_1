@@ -39,8 +39,8 @@ class GameController
         {
             gameState.EliminateCurrentPlayer();
 
-            // game ends when all but one player are eliminated (or all for a draw)
-            if (gameState.GetEliminatedCount() >= gameState.GetPlayerIdCount() - 1)
+            // game ends when all players are eliminated (handles mountains partitioning the board)
+            if (gameState.GetEliminatedCount() >= gameState.GetPlayerIdCount())
             {
                 gameState.SetGameOver();
                 gui.DisplayGameOver(gameState);
