@@ -39,10 +39,22 @@ class GameController
         {
             gameState.EliminateCurrentPlayer();
 
-            // game ends when all players are eliminated (handles mountains partitioning the board)
-            if (gameState.GetEliminatedCount() >= gameState.GetPlayerIdCount())
+            // one player remains — auto-claim all tiles reachable from their territory,
+            // then end the game (avoids tedious manual clicking through remaining moves)
+            if (gameState.GetEliminatedCount() >= gameState.GetPlayerIdCount() - 1)
             {
+                // find the surviving player and flood-fill their reachable empty tiles
+                for (int i = 0; i < gameState.GetPlayerIdCount(); i++)
+                {
+                    if (!gameState.IsPlayerEliminated(i))
+                    {
+                        gameState.AutoClaimReachableTiles(i); // awards points for each claimed tile
+                        break; // only one non-eliminated player exists at this point
+                    }
+                }
+                gui.RefreshAllTileVisuals(gameState); // redraw board to show auto-claimed tiles
                 gameState.SetGameOver();
+                gameState.PrintMapState("GAME OVER - final state");
                 gui.DisplayGameOver(gameState);
                 Console.WriteLine("Game over");
                 return;
@@ -94,9 +106,14 @@ class GameController
 
         gameState.AwardPointToPlayerById(gameState.GetCurrenTurnPlayerId());
         gameState.AdvanceCurrentTurnPlayerId();
+        // skip players already eliminated in previous turns (normal advance doesn't skip them)
+        while (gameState.IsPlayerEliminated(gameState.GetCurrenTurnPlayerId()))
+            gameState.AdvanceCurrentTurnPlayerId();
 
-        gui.UpdateGameVisualsAfterTilePressed(pressedTile, gameState); 
-        
+        gui.UpdateGameVisualsAfterTilePressed(pressedTile, gameState);
+        int justPlacedId = gameState.GetCurrenTurnPlayerId() == 0 ? gameState.GetPlayerIdCount() - 1 : gameState.GetCurrenTurnPlayerId() - 1;
+        gameState.PrintMapState($"After P{justPlacedId} placed at ({pressedTile.GetRowId()},{pressedTile.GetColId()})");
+
         CheckGameOver();
     }
 

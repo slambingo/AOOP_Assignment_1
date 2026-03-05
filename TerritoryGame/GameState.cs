@@ -35,7 +35,7 @@ class GameState
 
     // tracks players who have no legal moves left and are out of the game
     private List<int> eliminatedPlayers = new List<int>();
-    public void EliminateCurrentPlayer() { eliminatedPlayers.Add(currentTurnPlayerId); } // marks current player as eliminated
+    public void EliminateCurrentPlayer() { if (!eliminatedPlayers.Contains(currentTurnPlayerId)) eliminatedPlayers.Add(currentTurnPlayerId); } // marks current player as eliminated (guards against duplicates)
     public bool IsPlayerEliminated(int id) { return eliminatedPlayers.Contains(id); } // checks if a player is eliminated
     public int GetEliminatedCount() { return eliminatedPlayers.Count; } // how many players are eliminated
 
@@ -262,6 +262,64 @@ class GameState
         return false;
     }
     
+    // prints the current map to console: W=mountain, .=empty, 0-9=player id
+    public void PrintMapState(string label)
+    {
+        Console.WriteLine($"--- {label} ---");
+        for (int row = 0; row < mapSizeRow; row++)
+        {
+            string line = "";
+            for (int col = 0; col < mapSizeCol; col++)
+            {
+                MapTile tile = GetMapTile(row, col);
+                if (tile.GetTileType() == TileType.Mountain)      line += "W ";
+                else if (tile.GetTileType() == TileType.Empty)    line += ". ";
+                else                                               line += $"{tile.GetOwnerId()} ";
+            }
+            Console.WriteLine(line);
+        }
+        for (int i = 0; i < playerIdCount; i++)
+            Console.WriteLine($"  Player {i}: {playerInfos[i].pointCount} pts | eliminated: {eliminatedPlayers.Contains(i)}");
+        Console.WriteLine($"  Current turn: {currentTurnPlayerId}");
+        Console.WriteLine();
+    }
+
+    // flood-fills all empty tiles reachable from playerId's territory and awards points for each
+    // uses an iterative expansion: each pass of the while loop grows the territory by one layer
+    // stops when no more empty tiles are adjacent to the player's territory (including mountains as blockers)
+    public void AutoClaimReachableTiles(int playerId)
+    {
+        bool changed = true;
+        while (changed) // keep expanding until no new tiles were claimed this pass
+        {
+            changed = false;
+            foreach (List<MapTile> tileRow in mapTiles)
+            {
+                foreach (MapTile tile in tileRow)
+                {
+                    if (tile.GetTileType() != TileType.Empty) continue; // skip mountains and already-owned tiles
+
+                    // check all 8 neighbours (including diagonals) for a tile owned by this player
+                    bool hasAdjacentPlayerTile = false;
+                    for (int dr = -1; dr <= 1 && !hasAdjacentPlayerTile; dr++)
+                        for (int dc = -1; dc <= 1 && !hasAdjacentPlayerTile; dc++)
+                        {
+                            MapTile adj = GetMapTile(tile.GetRowId() + dr, tile.GetColId() + dc);
+                            if (adj != null && adj.GetOwnerId() == playerId)
+                                hasAdjacentPlayerTile = true;
+                        }
+
+                    if (hasAdjacentPlayerTile)
+                    {
+                        tile.UpdateTileAfterPressed(playerId); // claim the tile
+                        AwardPointToPlayerById(playerId);      // award a point for it
+                        changed = true; // signal that territory grew, so we need another pass
+                    }
+                }
+            }
+        }
+    }
+
     public List<(int id, int points)> GetPlayerScores()
     {
         var scores = new List<(int id, int points)>();

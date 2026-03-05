@@ -59,7 +59,7 @@ class GUI
         tabControl = new TabControl();
         gameTab = new TabItem
         {
-            Header = "Activate Game"
+            Header = "Active Game"
         };
 
         creationTab = new TabItem
@@ -334,6 +334,18 @@ class GUI
             Height = 400
         };
         gameOverWindow.Show();
+    }
+
+    // redraws every tile on the game board — used after bulk state changes like auto-claiming
+    // (UpdateGameVisualsAfterTilePressed only updates a single tile, so it can't be used here)
+    public void RefreshAllTileVisuals(GameState gameState)
+    {
+        for (int row = 0; row < gameState.GetMapSizeRow(); row++)
+            for (int col = 0; col < gameState.GetMapSizeCol(); col++)
+            {
+                MapTile tile = gameState.GetMapTile(row, col);
+                tile.GetTileVisual().Background = tile.GetColor(); // sync button colour to tile state
+            }
     }
 
     public void UpdateGameVisualsAfterTilePressed(MapTile pressedTile, GameState gameState)
